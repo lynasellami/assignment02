@@ -54,6 +54,7 @@ public class MarathonController {
     private ParallelTransition raceAnimation;
     private boolean raceCreated = false;
     private boolean raceRunning = false;
+    private boolean winnerDeclared = false;
 
     @FXML
     public void initialize() {
@@ -77,35 +78,34 @@ public class MarathonController {
         if (raceAnimation != null) {
             raceAnimation.play();
             raceRunning = true;
-            appendMessage("Race started (runners move across the track).");
+            appendMessage("Race started! Runners are moving toward the finish line.");
         }
     }
 
     @FXML
     private void handlePause() {
-        // Simple pause for now (no extra logic)
         if (raceAnimation != null && raceRunning) {
             raceAnimation.pause();
             raceRunning = false;
-            appendMessage("Race paused (simple pause, logic will be improved later).");
+            appendMessage("Race paused.");
         }
     }
 
     @FXML
     private void handleReset() {
-        // Reset runners back to the starting line
         if (raceAnimation != null) {
             raceAnimation.stop();
         }
         raceRunning = false;
         raceCreated = false;
+        winnerDeclared = false;
 
         if (runner1Pane != null) runner1Pane.setTranslateX(0);
         if (runner2Pane != null) runner2Pane.setTranslateX(0);
         if (runner3Pane != null) runner3Pane.setTranslateX(0);
         if (runner4Pane != null) runner4Pane.setTranslateX(0);
 
-        appendMessage("Runners reset to the start line (animation will be recreated on next Start).");
+        appendMessage("Runners reset to the start line. Press Start to run again.");
     }
 
     @FXML
@@ -115,8 +115,8 @@ public class MarathonController {
     }
 
     /**
-     * Creates a very simple TranslateTransition for each runner.
-     * This is just a first test – speeds, winner logic, etc. will come later.
+     * Creates a simple TranslateTransition for each runner.
+     * This version also declares a winner when the first one finishes.
      */
     private void createBasicRaceAnimation() {
         if (runner1Pane == null || runner2Pane == null ||
@@ -125,9 +125,12 @@ public class MarathonController {
             return;
         }
 
-        // Rough distance from start to finish (can be improved later using racePane width)
-        double distance = 600; // TODO: adjust based on layout if needed
+        winnerDeclared = false;
 
+        // Rough distance from start to finish
+        double distance = 600; // we can refine this later using racePane width
+
+        // Different durations so they don't all tie
         TranslateTransition t1 = new TranslateTransition(Duration.seconds(6), runner1Pane);
         t1.setToX(distance);
 
@@ -140,7 +143,28 @@ public class MarathonController {
         TranslateTransition t4 = new TranslateTransition(Duration.seconds(7.5), runner4Pane);
         t4.setToX(distance);
 
+        // When each runner finishes, check if we already have a winner
+        t1.setOnFinished(e -> declareWinnerIfFirst("Runner 1 (purple)"));
+        t2.setOnFinished(e -> declareWinnerIfFirst("Runner 2 (blue)"));
+        t3.setOnFinished(e -> declareWinnerIfFirst("Runner 3 (star shirt)"));
+        t4.setOnFinished(e -> declareWinnerIfFirst("Runner 4 (pink)"));
+
         raceAnimation = new ParallelTransition(t1, t2, t3, t4);
+    }
+
+    /**
+     * Declares the winner only once – the first transition that finishes wins.
+     */
+    private void declareWinnerIfFirst(String winnerName) {
+        if (winnerDeclared) {
+            return;
+        }
+        winnerDeclared = true;
+
+        appendMessage("Winner: " + winnerName + " 🎉");
+        if (messageLabel != null) {
+            messageLabel.setText("Marathon Status – Winner Announced");
+        }
     }
 
     // Helper to write into the message area
@@ -152,9 +176,6 @@ public class MarathonController {
             messageArea.setText(text);
         } else {
             messageArea.appendText("\n" + text);
-        }
-        if (messageLabel != null) {
-            messageLabel.setText("Marathon Status");
         }
     }
 }
