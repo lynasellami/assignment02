@@ -1,12 +1,42 @@
 package Model;
 
 public class Runner {
-    // TODO: Define attributes (e.g., name, speed, distance)
-    // TODO: Add constructors, getters, and setters
 
-    public Runner() {
-        // TODO: Initialize runner properties
+    private String name;
+    private int number;
+    private double speed;    // pixels per second (or any unit you choose)
+    private double distance; // distance covered so far
+
+    public Runner(String name, int number) {
+        this.name = name;
+        this.number = number;
     }
 
-    // TODO: Add methods (e.g., update distance, reset, etc.)
+    // Basic getters
+    public String getName() {
+        return name;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    // Basic setters
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    // TODO: Add methods for updating distance, resetting, etc.
 }

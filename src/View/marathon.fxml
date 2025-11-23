@@ -1,23 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controller.MarathonController">
+            fx:controller="Controller.MarathonController">
 
+    <!-- CENTER: Title + empty race pane placeholder -->
     <center>
-        <VBox alignment="CENTER" spacing="10">
+        <VBox alignment="CENTER" spacing="15">
             <Label text="Marathon Simulator"
-                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-
-
-            <HBox spacing="10" alignment="CENTER">
-                <Button fx:id="playPauseButton" text="Play" />
-                <Button fx:id="resetButton" text="Reset" />
-            </HBox>
+            <!-- Placeholder for the race area (track + runners later) -->
+            <Pane fx:id="racePane"
+                  prefWidth="800" prefHeight="300"
+                  style="-fx-border-color: black; -fx-border-width: 2;
+                         -fx-background-color: #f5f5f5;">
+                <!-- TODO: draw race track and runners here -->
+            </Pane>
         </VBox>
     </center>
+
+    <!-- BOTTOM: buttons on the left, status on the right -->
+    <bottom>
+        <BorderPane prefHeight="150">
+
+            <!-- Buttons (left) -->
+            <left>
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      BorderPane.alignment="CENTER_LEFT"
+                      style="-fx-padding: 10;">
+                    <children>
+                        <Button fx:id="startButton"
+                                text="Start"
+                                onAction="#handleStart" />
+                        <Button fx:id="pauseButton"
+                                text="Pause"
+                                onAction="#handlePause" />
+                        <Button fx:id="resetButton"
+                                text="Reset"
+                                onAction="#handleReset" />
+                        <Button fx:id="exitButton"
+                                text="Exit"
+                                onAction="#handleExit" />
+                    </children>
+                </HBox>
+            </left>
+
+            <!-- Status / message area (right) -->
+            <center>
+                <VBox spacing="5" style="-fx-padding: 10;">
+                    <children>
+                        <Label fx:id="messageLabel"
+                               text="Marathon Status"
+                               style="-fx-font-weight: bold;" />
+                        <TextArea fx:id="messageArea"
+                                  prefRowCount="3"
+                                  wrapText="true"
+                                  editable="false" />
+                    </children>
+                </VBox>
+            </center>
+
+        </BorderPane>
+    </bottom>
 
 </BorderPane>
