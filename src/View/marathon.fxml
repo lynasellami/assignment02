@@ -3,6 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="Controller.MarathonController">
@@ -13,7 +15,7 @@
             <Label text="Marathon Simulator"
                    style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-            <!-- Race area: basic track layout + placeholder runners -->
+            <!-- Race area: basic track layout + animated stickman GIFs -->
             <AnchorPane fx:id="racePane"
                         prefWidth="800" prefHeight="300"
                         style="-fx-border-color: black; -fx-border-width: 2;
@@ -42,33 +44,50 @@
                     <Line startX="730" startY="20" endX="730" endY="280"
                           stroke="black" strokeWidth="2" />
 
-                    <!-- ======================== -->
-                    <!-- Placeholder runner circles -->
-                    <!-- ======================== -->
+                    <!-- ========================================= -->
+                    <!-- Animated stickman GIFs (slightly above   -->
+                    <!-- lane centers, ready for PNG overlay)     -->
+                    <!-- ========================================= -->
 
-                    <!-- Runner 1 -->
-                    <Circle fx:id="runner1Circle"
-                            centerX="70" centerY="55"
-                            radius="12"
-                            fill="#ff4d4d" />
+                    <!-- Lane 1 -->
+                    <ImageView fx:id="runner1Gif"
+                               layoutX="60" layoutY="40"
+                               fitWidth="40" fitHeight="70"
+                               preserveRatio="true">
+                        <image>
+                            <Image url="@/Images/stickman-running.gif" />
+                        </image>
+                    </ImageView>
 
-                    <!-- Runner 2 -->
-                    <Circle fx:id="runner2Circle"
-                            centerX="70" centerY="115"
-                            radius="12"
-                            fill="#4d94ff" />
+                    <!-- Lane 2 -->
+                    <ImageView fx:id="runner2Gif"
+                               layoutX="60" layoutY="100"
+                               fitWidth="40" fitHeight="70"
+                               preserveRatio="true">
+                        <image>
+                            <Image url="@/Images/stickman-running.gif" />
+                        </image>
+                    </ImageView>
 
-                    <!-- Runner 3 -->
-                    <Circle fx:id="runner3Circle"
-                            centerX="70" centerY="175"
-                            radius="12"
-                            fill="#8e44ad" />
+                    <!-- Lane 3 -->
+                    <ImageView fx:id="runner3Gif"
+                               layoutX="60" layoutY="160"
+                               fitWidth="40" fitHeight="70"
+                               preserveRatio="true">
+                        <image>
+                            <Image url="@/Images/stickman-running.gif" />
+                        </image>
+                    </ImageView>
 
-                    <!-- Runner 4 -->
-                    <Circle fx:id="runner4Circle"
-                            centerX="70" centerY="235"
-                            radius="12"
-                            fill="#2ecc71" />
+                    <!-- Lane 4 -->
+                    <ImageView fx:id="runner4Gif"
+                               layoutX="60" layoutY="220"
+                               fitWidth="40" fitHeight="70"
+                               preserveRatio="true">
+                        <image>
+                            <Image url="@/Images/stickman-running.gif" />
+                        </image>
+                    </ImageView>
 
                 </children>
             </AnchorPane>
