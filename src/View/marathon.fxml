@@ -13,7 +13,7 @@
             <Label text="Marathon Simulator"
                    style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-            <!-- Race area: basic track layout (4 lanes) -->
+            <!-- Race area: basic track layout + placeholder runners -->
             <AnchorPane fx:id="racePane"
                         prefWidth="800" prefHeight="300"
                         style="-fx-border-color: black; -fx-border-width: 2;
@@ -31,22 +31,45 @@
                                fill="#2ecc71" />
 
                     <!-- Four-lane track (3 internal dividers) -->
-
-                    <!-- Divider between lane 1 and 2 -->
                     <Line startX="50" startY="80" endX="780" endY="80"
                           stroke="black" strokeWidth="1" />
-
-                    <!-- Divider between lane 2 and 3 -->
                     <Line startX="50" startY="140" endX="780" endY="140"
                           stroke="black" strokeWidth="1" />
-
-                    <!-- Divider between lane 3 and 4 -->
                     <Line startX="50" startY="200" endX="780" endY="200"
                           stroke="black" strokeWidth="1" />
 
-                    <!-- Temporary finish line (will improve later) -->
+                    <!-- Temporary finish line -->
                     <Line startX="730" startY="20" endX="730" endY="280"
                           stroke="black" strokeWidth="2" />
+
+                    <!-- ======================== -->
+                    <!-- Placeholder runner circles -->
+                    <!-- ======================== -->
+
+                    <!-- Runner 1 -->
+                    <Circle fx:id="runner1Circle"
+                            centerX="70" centerY="55"
+                            radius="12"
+                            fill="#ff4d4d" />
+
+                    <!-- Runner 2 -->
+                    <Circle fx:id="runner2Circle"
+                            centerX="70" centerY="115"
+                            radius="12"
+                            fill="#4d94ff" />
+
+                    <!-- Runner 3 -->
+                    <Circle fx:id="runner3Circle"
+                            centerX="70" centerY="175"
+                            radius="12"
+                            fill="#8e44ad" />
+
+                    <!-- Runner 4 -->
+                    <Circle fx:id="runner4Circle"
+                            centerX="70" centerY="235"
+                            radius="12"
+                            fill="#2ecc71" />
+
                 </children>
             </AnchorPane>
         </VBox>
