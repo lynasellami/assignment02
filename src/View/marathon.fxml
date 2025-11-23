@@ -37,10 +37,15 @@
                     <Line startX="50" startY="140" endX="780" endY="140" stroke="black"/>
                     <Line startX="50" startY="200" endX="780" endY="200" stroke="black"/>
 
-                    <!-- Temporary finish line -->
-                    <Line startX="730" startY="20" endX="730" endY="280"
-                          stroke="black" strokeWidth="2" />
-
+                    <!-- Finish line IMAGE -->
+                    <ImageView fx:id="finishLineImage"
+                               layoutX="730" layoutY="20"
+                               fitWidth="60" fitHeight="260"
+                               preserveRatio="false">
+                        <image>
+                            <Image url="@/Images/finish-line.png" />
+                        </image>
+                    </ImageView>
 
                     <!-- =================================================== -->
                     <!-- Runners (PNG body + GIF legs in StackPane)         -->
@@ -132,7 +137,7 @@
 
                     <!-- Runner 4 -->
                     <StackPane fx:id="runner4Pane"
-                               layoutX="70" layoutY="190">
+                               layoutX="70" layoutY="205">
 
                         <children>
 
