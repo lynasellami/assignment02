@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.Runner;
+import javafx.animation.KeyFrame;
 import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -12,13 +14,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class MarathonController {
 
-    // TRACK UI
     @FXML
     private Pane racePane;
 
-    // RUNNERS (PNG body + GIF legs inside StackPane)
     @FXML
     private StackPane runner1Pane;
 
@@ -31,7 +35,6 @@ public class MarathonController {
     @FXML
     private StackPane runner4Pane;
 
-    // BUTTONS
     @FXML
     private Button startButton;
 
@@ -44,21 +47,19 @@ public class MarathonController {
     @FXML
     private Button exitButton;
 
-    // MESSAGES
     @FXML
     private Label messageLabel;
 
     @FXML
     private TextArea messageArea;
 
-    // ANIMATION
     private ParallelTransition raceAnimation;
     private boolean raceCreated = false;
     private boolean raceRunning = false;
     private boolean winnerDeclared = false;
+    private boolean countdownInProgress = false;
 
-    // MODEL
-    private java.util.List<Runner> runners = new java.util.ArrayList<>();
+    private final List<Runner> runners = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -69,23 +70,22 @@ public class MarathonController {
             messageLabel.setText("Marathon Status");
         }
 
-        // Create randomized runner models for the first race
         createRunnerModels();
     }
 
     @FXML
     private void handleStart() {
+        if (raceRunning || countdownInProgress) {
+            return;
+        }
+
         if (!raceCreated) {
             createBasicRaceAnimation();
             raceCreated = true;
             appendMessage("Created race animation for this round.");
         }
 
-        if (raceAnimation != null) {
-            raceAnimation.play();
-            raceRunning = true;
-            appendMessage("Race started!");
-        }
+        startCountdown();
     }
 
     @FXML
@@ -105,16 +105,18 @@ public class MarathonController {
         raceRunning = false;
         raceCreated = false;
         winnerDeclared = false;
+        countdownInProgress = false;
 
-        // Reset runners to start line
         if (runner1Pane != null) runner1Pane.setTranslateX(0);
         if (runner2Pane != null) runner2Pane.setTranslateX(0);
         if (runner3Pane != null) runner3Pane.setTranslateX(0);
         if (runner4Pane != null) runner4Pane.setTranslateX(0);
 
-        appendMessage("Runners reset. New speeds will be generated.");
+        if (messageLabel != null) {
+            messageLabel.setText("Marathon Status");
+        }
 
-        // New race = new speeds
+        appendMessage("Runners reset. New speeds will be generated.");
         createRunnerModels();
     }
 
@@ -124,9 +126,8 @@ public class MarathonController {
         Platform.exit();
     }
 
-    // ----------------------------------------------------------
-    // CREATE BASIC RACE ANIMATION USING MODEL SPEEDS
-    // ----------------------------------------------------------
+    // ---------------------- race animation ----------------------
+
     private void createBasicRaceAnimation() {
 
         if (runners.isEmpty()) {
@@ -136,9 +137,9 @@ public class MarathonController {
 
         winnerDeclared = false;
 
-        double distance = 600; // from start to finish
+        // increase distance so they actually reach the finish line
+        double distance = 730; // tuned for current layout
 
-        // Build TranslateTransitions using model speeds
         TranslateTransition t1 = new TranslateTransition(
                 Duration.seconds(8 / runners.get(0).getBaseSpeed()),
                 runners.get(0).getUiPane()
@@ -163,7 +164,6 @@ public class MarathonController {
         );
         t4.setToX(distance);
 
-        // Winner detection using model data
         t1.setOnFinished(e -> declareWinnerIfFirst(runners.get(0)));
         t2.setOnFinished(e -> declareWinnerIfFirst(runners.get(1)));
         t3.setOnFinished(e -> declareWinnerIfFirst(runners.get(2)));
@@ -172,33 +172,70 @@ public class MarathonController {
         raceAnimation = new ParallelTransition(t1, t2, t3, t4);
     }
 
-    // ----------------------------------------------------------
-    // WINNER LOGIC
-    // ----------------------------------------------------------
+    // ---------------------- countdown ---------------------------
+
+    private void startCountdown() {
+        countdownInProgress = true;
+
+        if (startButton != null) startButton.setDisable(true);
+        if (pauseButton != null) pauseButton.setDisable(true);
+        if (resetButton != null) resetButton.setDisable(true);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.ZERO, e -> setStatusText("3")),
+                new KeyFrame(Duration.seconds(1), e -> setStatusText("2")),
+                new KeyFrame(Duration.seconds(2), e -> setStatusText("1")),
+                new KeyFrame(Duration.seconds(3), e -> setStatusText("GO!")),
+                new KeyFrame(Duration.seconds(3.5), e -> {
+                    setStatusText("Marathon Status");
+                    countdownInProgress = false;
+
+                    if (startButton != null) startButton.setDisable(false);
+                    if (pauseButton != null) pauseButton.setDisable(false);
+                    if (resetButton != null) resetButton.setDisable(false);
+
+                    if (raceAnimation != null) {
+                        raceAnimation.play();
+                        raceRunning = true;
+                        appendMessage("Race started! Runners are moving toward the finish line.");
+                    }
+                })
+        );
+
+        timeline.play();
+    }
+
+    private void setStatusText(String text) {
+        if (messageLabel != null) {
+            messageLabel.setText(text);
+        }
+    }
+
+    // ---------------------- winner logic ------------------------
+
     private void declareWinnerIfFirst(Runner r) {
         if (winnerDeclared) return;
 
         winnerDeclared = true;
+        raceRunning = false;
 
         appendMessage("🏆 Winner: " + r.getName() + " (#" + r.getNumber() + ")");
         if (messageLabel != null) {
-            messageLabel.setText("Winner Announced!");
+            messageLabel.setText("Winner: " + r.getName());
         }
     }
 
-    // ----------------------------------------------------------
-    // RANDOMIZE RUNNER MODELS FOR EACH RACE
-    // ----------------------------------------------------------
+    // ---------------------- models / speeds ---------------------
+
     private void createRunnerModels() {
         runners.clear();
 
-        java.util.Random rand = new java.util.Random();
+        Random rand = new Random();
 
-        // Randomized base speeds — small variations
-        double finnSpeed       = 1.3 + (rand.nextDouble() * 0.3 - 0.15);  // 1.15–1.45
-        double bubblegumSpeed  = 1.0 + (rand.nextDouble() * 0.25 - 0.12); // 0.88–1.12
-        double jakeSpeed       = 1.6 + (rand.nextDouble() * 0.35 - 0.17); // 1.43–1.77
-        double marcelineSpeed  = 1.1 + (rand.nextDouble() * 0.25 - 0.12); // 0.98–1.22
+        double finnSpeed       = 1.3 + (rand.nextDouble() * 0.3 - 0.15);
+        double bubblegumSpeed  = 1.0 + (rand.nextDouble() * 0.25 - 0.12);
+        double jakeSpeed       = 1.6 + (rand.nextDouble() * 0.35 - 0.17);
+        double marcelineSpeed  = 1.1 + (rand.nextDouble() * 0.25 - 0.12);
 
         runners.add(new Runner("Finn",       33, finnSpeed, runner1Pane));
         runners.add(new Runner("Bubblegum",  44, bubblegumSpeed, runner2Pane));
@@ -212,9 +249,6 @@ public class MarathonController {
         appendMessage("Marceline: " + String.format("%.2f", marcelineSpeed));
     }
 
-    // ----------------------------------------------------------
-    // LOGGING / MESSAGE HELPER
-    // ----------------------------------------------------------
     private void appendMessage(String text) {
         if (messageArea == null) return;
 
