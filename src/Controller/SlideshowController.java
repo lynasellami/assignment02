@@ -1,20 +1,14 @@
 package Controller;
 
+import Main.MarathonMain;
 import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SlideshowController {
 
@@ -25,66 +19,73 @@ public class SlideshowController {
     private Label captionLabel;
 
     @FXML
-    private StackPane imageContainer;
-
-    @FXML
     private Button skipButton;
 
-    private List<Image> images = new ArrayList<>();
+    @FXML
+    private StackPane imageContainer;
+
     private int index = 0;
+
+    private final String[] images = {
+            "/Images/runner1.png",
+            "/Images/runner2.png",
+            "/Images/runner3.png",
+            "/Images/runner4.png"
+    };
+
+    private final String[] captions = {
+            "Get ready: Finn (#11)",
+            "Get ready: Bubblegum (#22)",
+            "Get ready: Jake (#33)",
+            "Get ready: Marceline (#44)"
+    };
 
     @FXML
     public void initialize() {
+        runSlideshow();
 
-        // Load slideshow images
-        images.add(new Image(getClass().getResource("/Images/runner1.png").toString()));
-        images.add(new Image(getClass().getResource("/Images/runner2.png").toString()));
-        images.add(new Image(getClass().getResource("/Images/runner3.png").toString()));
-        images.add(new Image(getClass().getResource("/Images/runner4.png").toString()));
-
-        skipButton.setOnAction(e -> goToRace());
-
-        startSlideshow();
+        skipButton.setOnAction(e -> {
+            try {
+                MarathonMain.switchToRaceView();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
-    private void startSlideshow() {
-        if (index >= images.size()) {
-            goToRace();
+    private void runSlideshow() {
+        showImage(images[index], captions[index]);
+
+        FadeTransition fade = new FadeTransition(Duration.seconds(2), slideshowImage);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setOnFinished(e -> nextImage());
+        fade.play();
+    }
+
+    private void nextImage() {
+        index++;
+        if (index >= images.length) {
+            try {
+                MarathonMain.switchToRaceView();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             return;
         }
 
-        slideshowImage.setImage(images.get(index));
-        captionLabel.setText("Runner " + (index + 1));
+        showImage(images[index], captions[index]);
 
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), slideshowImage);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-
-        PauseTransition hold = new PauseTransition(Duration.seconds(2));
-
-        FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), slideshowImage);
-        fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
-
-        fadeOut.setOnFinished(e -> {
-            index++;
-            startSlideshow();
-        });
-
-        fadeIn.play();
-        fadeIn.setOnFinished(ev -> hold.play());
-        hold.setOnFinished(ev -> fadeOut.play());
+        FadeTransition fade = new FadeTransition(Duration.seconds(2), slideshowImage);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setOnFinished(e -> nextImage());
+        fade.play();
     }
 
-    private void goToRace() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/marathon.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) skipButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void showImage(String path, String caption) {
+        Image img = new Image(path);
+        slideshowImage.setImage(img);
+        captionLabel.setText(caption);
     }
 }
