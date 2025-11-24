@@ -18,7 +18,7 @@ public class MarathonController {
     @FXML
     private Pane racePane;
 
-    // RUNNERS (each = PNG body + GIF legs)
+    // RUNNERS (each = PNG body + GIF legs in StackPane)
     @FXML
     private StackPane runner1Pane;
 
@@ -69,7 +69,7 @@ public class MarathonController {
             messageLabel.setText("Marathon Status");
         }
 
-        // create the runner model objects
+        // Create runner model objects
         createRunnerModels();
     }
 
@@ -120,53 +120,71 @@ public class MarathonController {
         Platform.exit();
     }
 
-    // BASIC RACE ANIMATION
+    // ----------------------------------------------------------
+    // BASIC RACE ANIMATION (now uses Runner baseSpeed)
+    // ----------------------------------------------------------
     private void createBasicRaceAnimation() {
-        if (runner1Pane == null || runner2Pane == null ||
-                runner3Pane == null || runner4Pane == null) {
-            appendMessage("Runners not ready yet – cannot create animation.");
+
+        if (runners.isEmpty()) {
+            appendMessage("No runner models found!");
             return;
         }
 
         winnerDeclared = false;
 
-        // distance the runners travel
-        double distance = 600;
+        double distance = 600; // track distance
 
-        // simple test speeds (will be replaced later with model speeds)
-        TranslateTransition t1 = new TranslateTransition(Duration.seconds(6), runner1Pane);
+        // Build animation transitions using model speeds
+        TranslateTransition t1 = new TranslateTransition(
+                Duration.seconds(8 / runners.get(0).getBaseSpeed()),
+                runners.get(0).getUiPane()
+        );
         t1.setToX(distance);
 
-        TranslateTransition t2 = new TranslateTransition(Duration.seconds(6.5), runner2Pane);
+        TranslateTransition t2 = new TranslateTransition(
+                Duration.seconds(8 / runners.get(1).getBaseSpeed()),
+                runners.get(1).getUiPane()
+        );
         t2.setToX(distance);
 
-        TranslateTransition t3 = new TranslateTransition(Duration.seconds(7), runner3Pane);
+        TranslateTransition t3 = new TranslateTransition(
+                Duration.seconds(8 / runners.get(2).getBaseSpeed()),
+                runners.get(2).getUiPane()
+        );
         t3.setToX(distance);
 
-        TranslateTransition t4 = new TranslateTransition(Duration.seconds(7.5), runner4Pane);
+        TranslateTransition t4 = new TranslateTransition(
+                Duration.seconds(8 / runners.get(3).getBaseSpeed()),
+                runners.get(3).getUiPane()
+        );
         t4.setToX(distance);
 
-        t1.setOnFinished(e -> declareWinnerIfFirst("Finn (#33)"));
-        t2.setOnFinished(e -> declareWinnerIfFirst("Bubblegum (#44)"));
-        t3.setOnFinished(e -> declareWinnerIfFirst("Jake (#22)"));
-        t4.setOnFinished(e -> declareWinnerIfFirst("Marceline (#11)"));
+        // Winner detection using model data
+        t1.setOnFinished(e -> declareWinnerIfFirst(runners.get(0)));
+        t2.setOnFinished(e -> declareWinnerIfFirst(runners.get(1)));
+        t3.setOnFinished(e -> declareWinnerIfFirst(runners.get(2)));
+        t4.setOnFinished(e -> declareWinnerIfFirst(runners.get(3)));
 
         raceAnimation = new ParallelTransition(t1, t2, t3, t4);
     }
 
-    // DECLARE WINNER
-    private void declareWinnerIfFirst(String winnerName) {
+    // ----------------------------------------------------------
+    // DECLARE WINNER (first runner to finish)
+    // ----------------------------------------------------------
+    private void declareWinnerIfFirst(Runner r) {
         if (winnerDeclared) return;
 
         winnerDeclared = true;
 
-        appendMessage("Winner: " + winnerName + " 🎉");
+        appendMessage("Winner: " + r.getName() + " (#" + r.getNumber() + ") 🎉");
         if (messageLabel != null) {
             messageLabel.setText("Marathon Status – Winner Announced");
         }
     }
 
+    // ----------------------------------------------------------
     // CREATE RUNNER MODEL OBJECTS
+    // ----------------------------------------------------------
     private void createRunnerModels() {
         runners.clear();
 
@@ -178,7 +196,9 @@ public class MarathonController {
         appendMessage("Runner models created (names, numbers, speeds).");
     }
 
+    // ----------------------------------------------------------
     // MESSAGE HELPER
+    // ----------------------------------------------------------
     private void appendMessage(String text) {
         if (messageArea == null) return;
 
