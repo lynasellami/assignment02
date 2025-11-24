@@ -121,7 +121,7 @@ public class MarathonController {
     }
 
     // ----------------------------------------------------------
-    // BASIC RACE ANIMATION (now uses Runner baseSpeed)
+    // BASIC RACE ANIMATION (uses Runner baseSpeed)
     // ----------------------------------------------------------
     private void createBasicRaceAnimation() {
 
@@ -188,10 +188,11 @@ public class MarathonController {
     private void createRunnerModels() {
         runners.clear();
 
-        runners.add(new Runner("Finn",       33, 1.0, runner1Pane));
-        runners.add(new Runner("Bubblegum",  44, 1.0, runner2Pane));
-        runners.add(new Runner("Jake",       22, 1.0, runner3Pane));
-        runners.add(new Runner("Marceline",  11, 1.0, runner4Pane));
+        // Different baseSpeed values so they actually run differently
+        runners.add(new Runner("Finn",       33, 1.3, runner1Pane)); // slightly fast
+        runners.add(new Runner("Bubblegum",  44, 1.0, runner2Pane)); // baseline
+        runners.add(new Runner("Jake",       22, 1.6, runner3Pane)); // fastest
+        runners.add(new Runner("Marceline",  11, 1.1, runner4Pane)); // a bit fast
 
         appendMessage("Runner models created (names, numbers, speeds).");
     }
