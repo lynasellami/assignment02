@@ -28,10 +28,11 @@
             <StackPane style="-fx-border-color: black; -fx-border-width: 3;">
                 <children>
 
-                    <Pane fx:id="racePane" prefWidth="900" prefHeight="340">
+                    <!-- Slightly taller so the track can breathe -->
+                    <Pane fx:id="racePane" prefWidth="900" prefHeight="360">
 
-                        <!-- START column: green bar + vertical label -->
-                        <StackPane layoutX="20" layoutY="40"
+                        <!-- START column: green bar + vertical label (moved up) -->
+                        <StackPane layoutX="20" layoutY="30"
                                    prefWidth="70" prefHeight="260"
                                    style="-fx-background-color: #32CD32; -fx-border-color: black; -fx-border-width: 1;">
                             <Label text="START"
@@ -39,22 +40,21 @@
                                    style="-fx-font-size: 18px; -fx-font-weight: bold;" />
                         </StackPane>
 
-                        <!-- Lane lines (bottom lane moved up a bit) -->
-                        <Line startX="110" startY="60" endX="840" endY="60" />
-                        <Line startX="110" startY="140" endX="840" endY="140" />
-                        <Line startX="110" startY="220" endX="840" endY="220" />
-                        <Line startX="110" startY="280" endX="840" endY="280" />
+                        <!-- Lane lines (all moved up by 20 px) -->
+                        <Line startX="110" startY="85" endX="840" endY="85" />
+                        <Line startX="110" startY="175" endX="840" endY="175" />
+                        <Line startX="110" startY="265" endX="840" endY="265" />
 
-                        <!-- FINISH LINE, behind runners -->
-                        <ImageView layoutX="850" layoutY="40"
+                        <!-- FINISH LINE, behind runners (moved up) -->
+                        <ImageView layoutX="850" layoutY="30"
                                    fitWidth="80" fitHeight="260">
                             <image>
                                 <Image url="@../Images/finish-line.png" />
                             </image>
                         </ImageView>
 
-                        <!-- Runner 1 (Finn) -->
-                        <StackPane fx:id="runner1Pane" layoutX="130" layoutY="20">
+                        <!-- Runner 1 (Finn) – moved up -->
+                        <StackPane fx:id="runner1Pane" layoutX="130" layoutY="10">
                             <children>
                                 <ImageView fitHeight="65" preserveRatio="true" translateY="28">
                                     <image>
@@ -69,8 +69,8 @@
                             </children>
                         </StackPane>
 
-                        <!-- Runner 2 (Bubblegum) -->
-                        <StackPane fx:id="runner2Pane" layoutX="130" layoutY="100">
+                        <!-- Runner 2 (Bubblegum) – moved up -->
+                        <StackPane fx:id="runner2Pane" layoutX="130" layoutY="90">
                             <children>
                                 <ImageView fitHeight="65" preserveRatio="true" translateY="28">
                                     <image>
@@ -85,8 +85,8 @@
                             </children>
                         </StackPane>
 
-                        <!-- Runner 3 (Jake) -->
-                        <StackPane fx:id="runner3Pane" layoutX="130" layoutY="180">
+                        <!-- Runner 3 (Jake) – moved up -->
+                        <StackPane fx:id="runner3Pane" layoutX="130" layoutY="170">
                             <children>
                                 <ImageView fitHeight="65" preserveRatio="true" translateY="28">
                                     <image>
@@ -101,8 +101,8 @@
                             </children>
                         </StackPane>
 
-                        <!-- Runner 4 (Marceline) – moved up a bit -->
-                        <StackPane fx:id="runner4Pane" layoutX="130" layoutY="240">
+                        <!-- Runner 4 (Marceline) – moved up -->
+                        <StackPane fx:id="runner4Pane" layoutX="130" layoutY="250">
                             <children>
                                 <ImageView fitHeight="65" preserveRatio="true" translateY="28">
                                     <image>
@@ -123,55 +123,63 @@
         </VBox>
     </center>
 
-    <!-- BOTTOM: CONTROLS + STATUS -->
+    <!-- BOTTOM: CONTROLS + STATUS (sketch style) -->
     <bottom>
-        <!-- Top border separating bottom like in sketch -->
+        <!-- Top border separating bottom from track -->
         <BorderPane prefHeight="220"
                     style="-fx-border-color: black transparent transparent transparent;
                            -fx-border-width: 3 0 0 0;">
 
-            <!-- LEFT: buttons block -->
-            <left>
-                <VBox spacing="10" prefWidth="220">
-                    <padding>
-                        <Insets top="20" left="25" bottom="20" right="15"/>
-                    </padding>
-
-                    <!-- First row: Start / Pause -->
-                    <HBox spacing="15">
-                        <Button fx:id="startButton" text="Start"
-                                onAction="#handleStart"
-                                style="-fx-background-color: #b6ff6d;" />
-                        <Button fx:id="pauseButton" text="Pause"
-                                onAction="#handlePause"
-                                style="-fx-background-color: #ff6d6d;" />
-                    </HBox>
-
-                    <!-- Second row: Exit / Reset -->
-                    <HBox spacing="15">
-                        <Button fx:id="exitButton" text="Exit"
-                                onAction="#handleExit"
-                                style="-fx-background-color: #ff6d6d;" />
-                        <Button fx:id="resetButton" text="Reset"
-                                onAction="#handleReset" />
-                    </HBox>
-                </VBox>
-            </left>
-
-            <!-- RIGHT: Marathon Status box -->
             <center>
-                <VBox spacing="5">
-                    <padding>
-                        <Insets top="10" left="10" right="10" bottom="10"/>
-                    </padding>
-                    <Label fx:id="messageLabel"
-                           text="Marathon Status"
-                           style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-                    <TextArea fx:id="messageArea"
-                              prefRowCount="6"
-                              wrapText="true"
-                              prefWidth="750" />
-                </VBox>
+                <!-- Two main sections: left buttons, right status -->
+                <HBox prefHeight="220">
+                    <!-- LEFT: Buttons box with right border -->
+                    <StackPane prefWidth="350"
+                               style="-fx-border-color: black; -fx-border-width: 0 3 0 0;">
+                        <VBox spacing="18">
+                            <padding>
+                                <Insets top="25" left="40" bottom="20" right="40"/>
+                            </padding>
+
+                            <!-- Row 1: Start + Pause -->
+                            <HBox spacing="30">
+                                <Button fx:id="startButton" text="Start"
+                                        onAction="#handleStart"
+                                        style="-fx-background-color: #b6ff6d; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 20 8 20;" />
+                                <Button fx:id="pauseButton" text="Pause"
+                                        onAction="#handlePause"
+                                        style="-fx-background-color: #ff6d6d; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 20 8 20;" />
+                            </HBox>
+
+                            <!-- Row 2: Exit + Reset (Reset green) -->
+                            <HBox spacing="20">
+                                <Button fx:id="exitButton" text="Exit"
+                                        onAction="#handleExit"
+                                        style="-fx-background-color: #ff6d6d; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 30 8 30;" />
+
+                                <Button fx:id="resetButton" text="Reset"
+                                        onAction="#handleReset"
+                                        style="-fx-background-color: #b6ff6d; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 30 8 30;" />
+                            </HBox>
+                        </VBox>
+                    </StackPane>
+
+                    <!-- RIGHT: Marathon Status box with left border -->
+                    <StackPane style="-fx-border-color: black; -fx-border-width: 0 0 0 3;">
+                        <VBox spacing="5">
+                            <padding>
+                                <Insets top="10" left="10" right="10" bottom="10"/>
+                            </padding>
+                            <Label fx:id="messageLabel"
+                                   text="Marathon Status"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                            <TextArea fx:id="messageArea"
+                                      prefRowCount="6"
+                                      wrapText="true"
+                                      prefWidth="750" />
+                        </VBox>
+                    </StackPane>
+                </HBox>
             </center>
         </BorderPane>
     </bottom>
