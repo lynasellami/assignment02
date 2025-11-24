@@ -70,21 +70,38 @@ public class MarathonController {
             messageLabel.setText("Marathon Status");
         }
 
+        // First set of runner speeds
         createRunnerModels();
+
+        // Layout / animation info for the teacher
+        appendMessage("Layout: BorderPane for the main window, Pane for the track, " +
+                "StackPane for each runner (body + running legs), and VBox/HBox for controls/messages.");
+        appendMessage("Animation: each runner uses a TranslateTransition and they run together in a ParallelTransition.");
     }
 
     @FXML
     private void handleStart() {
-        if (raceRunning || countdownInProgress) {
+        // If countdown is already running, ignore clicks
+        if (countdownInProgress) {
             return;
         }
 
+        // If race was paused and already created -> just resume (no new countdown)
+        if (raceAnimation != null && raceCreated && !raceRunning) {
+            raceAnimation.play();
+            raceRunning = true;
+            appendMessage("Race resumed.");
+            return;
+        }
+
+        // First time starting this race
         if (!raceCreated) {
             createBasicRaceAnimation();
             raceCreated = true;
             appendMessage("Created race animation for this round.");
         }
 
+        // Start 3-2-1-GO countdown then play
         startCountdown();
     }
 
@@ -117,6 +134,8 @@ public class MarathonController {
         }
 
         appendMessage("Runners reset. New speeds will be generated.");
+
+        // New race = new randomized speeds
         createRunnerModels();
     }
 
@@ -137,8 +156,8 @@ public class MarathonController {
 
         winnerDeclared = false;
 
-        // increase distance so they actually reach the finish line
-        double distance = 730; // tuned for current layout
+        // distance adjusted so they reach the finish line
+        double distance = 730;
 
         TranslateTransition t1 = new TranslateTransition(
                 Duration.seconds(8 / runners.get(0).getBaseSpeed()),
@@ -170,6 +189,8 @@ public class MarathonController {
         t4.setOnFinished(e -> declareWinnerIfFirst(runners.get(3)));
 
         raceAnimation = new ParallelTransition(t1, t2, t3, t4);
+
+        appendMessage("Animation created: TranslateTransition for each runner combined in a ParallelTransition.");
     }
 
     // ---------------------- countdown ---------------------------
@@ -248,6 +269,8 @@ public class MarathonController {
         appendMessage("Jake: " + String.format("%.2f", jakeSpeed));
         appendMessage("Marceline: " + String.format("%.2f", marcelineSpeed));
     }
+
+    // ---------------------- logging helper ----------------------
 
     private void appendMessage(String text) {
         if (messageArea == null) return;

@@ -1,14 +1,22 @@
 package Controller;
 
-import Main.MarathonMain;
 import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class SlideshowController {
 
@@ -19,73 +27,78 @@ public class SlideshowController {
     private Label captionLabel;
 
     @FXML
-    private Button skipButton;
-
-    @FXML
     private StackPane imageContainer;
 
+    @FXML
+    private Button skipButton;
+
+    private final List<Image> images = new ArrayList<>();
+    private final List<String> captions = new ArrayList<>();
     private int index = 0;
-
-    private final String[] images = {
-            "/Images/runner1.png",
-            "/Images/runner2.png",
-            "/Images/runner3.png",
-            "/Images/runner4.png"
-    };
-
-    private final String[] captions = {
-            "Get ready: Finn (#11)",
-            "Get ready: Bubblegum (#22)",
-            "Get ready: Jake (#33)",
-            "Get ready: Marceline (#44)"
-    };
 
     @FXML
     public void initialize() {
-        runSlideshow();
 
-        skipButton.setOnAction(e -> {
-            try {
-                MarathonMain.switchToRaceView();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
+        // Load slideshow images from /Images
+        images.add(new Image(Objects.requireNonNull(
+                getClass().getResource("/Images/runner1.png")).toString()));
+        images.add(new Image(Objects.requireNonNull(
+                getClass().getResource("/Images/runner2.png")).toString()));
+        images.add(new Image(Objects.requireNonNull(
+                getClass().getResource("/Images/runner3.png")).toString()));
+        images.add(new Image(Objects.requireNonNull(
+                getClass().getResource("/Images/runner4.png")).toString()));
+
+        captions.add("Get ready: Finn (#11)");
+        captions.add("Get ready: Bubblegum (#22)");
+        captions.add("Get ready: Jake (#33)");
+        captions.add("Get ready: Marceline (#44)");
+
+        // Set up Skip button
+        skipButton.setOnAction(e -> switchToRace());
+
+        // Start slideshow
+        playCurrentImage();
     }
 
-    private void runSlideshow() {
-        showImage(images[index], captions[index]);
-
-        FadeTransition fade = new FadeTransition(Duration.seconds(2), slideshowImage);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setOnFinished(e -> nextImage());
-        fade.play();
-    }
-
-    private void nextImage() {
-        index++;
-        if (index >= images.length) {
-            try {
-                MarathonMain.switchToRaceView();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+    private void playCurrentImage() {
+        if (index >= images.size()) {
+            switchToRace();
             return;
         }
 
-        showImage(images[index], captions[index]);
+        slideshowImage.setImage(images.get(index));
+        captionLabel.setText(captions.get(index));
 
-        FadeTransition fade = new FadeTransition(Duration.seconds(2), slideshowImage);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setOnFinished(e -> nextImage());
-        fade.play();
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), slideshowImage);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition hold = new PauseTransition(Duration.seconds(1.5));
+
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), slideshowImage);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        fadeOut.setOnFinished(e -> {
+            index++;
+            playCurrentImage();
+        });
+
+        fadeIn.play();
+        fadeIn.setOnFinished(e -> hold.play());
+        hold.setOnFinished(e -> fadeOut.play());
     }
 
-    private void showImage(String path, String caption) {
-        Image img = new Image(path);
-        slideshowImage.setImage(img);
-        captionLabel.setText(caption);
+    private void switchToRace() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/marathon.fxml"));
+            Scene raceScene = new Scene(loader.load(), 1100, 700);
+            Stage stage = (Stage) skipButton.getScene().getWindow();
+            stage.setScene(raceScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
