@@ -9,8 +9,7 @@ public class MarathonMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // NOTE: View with capital V, matching the folder name
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/marathon.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/slideshow.fxml"));
         Scene scene = new Scene(loader.load());
         primaryStage.setTitle("Marathon Simulator");
         primaryStage.setScene(scene);
