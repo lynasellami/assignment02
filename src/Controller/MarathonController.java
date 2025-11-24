@@ -18,7 +18,7 @@ public class MarathonController {
     @FXML
     private Pane racePane;
 
-    // RUNNERS (each = PNG body + GIF legs in StackPane)
+    // RUNNERS (PNG body + GIF legs inside StackPane)
     @FXML
     private StackPane runner1Pane;
 
@@ -63,13 +63,13 @@ public class MarathonController {
     @FXML
     public void initialize() {
         if (messageArea != null) {
-            messageArea.setText("Welcome to the Marathon Simulator! (logic coming soon)");
+            messageArea.setText("Welcome to the Marathon Simulator!");
         }
         if (messageLabel != null) {
             messageLabel.setText("Marathon Status");
         }
 
-        // Create runner model objects
+        // Create randomized runner models for the first race
         createRunnerModels();
     }
 
@@ -78,13 +78,13 @@ public class MarathonController {
         if (!raceCreated) {
             createBasicRaceAnimation();
             raceCreated = true;
-            appendMessage("Created basic race animation (test version).");
+            appendMessage("Created race animation for this round.");
         }
 
         if (raceAnimation != null) {
             raceAnimation.play();
             raceRunning = true;
-            appendMessage("Race started! Runners are moving toward the finish line.");
+            appendMessage("Race started!");
         }
     }
 
@@ -106,35 +106,39 @@ public class MarathonController {
         raceCreated = false;
         winnerDeclared = false;
 
+        // Reset runners to start line
         if (runner1Pane != null) runner1Pane.setTranslateX(0);
         if (runner2Pane != null) runner2Pane.setTranslateX(0);
         if (runner3Pane != null) runner3Pane.setTranslateX(0);
         if (runner4Pane != null) runner4Pane.setTranslateX(0);
 
-        appendMessage("Runners reset to the start line. Press Start to run again.");
+        appendMessage("Runners reset. New speeds will be generated.");
+
+        // New race = new speeds
+        createRunnerModels();
     }
 
     @FXML
     private void handleExit() {
-        appendMessage("Exit button clicked. Closing application.");
+        appendMessage("Closing application...");
         Platform.exit();
     }
 
     // ----------------------------------------------------------
-    // BASIC RACE ANIMATION (uses Runner baseSpeed)
+    // CREATE BASIC RACE ANIMATION USING MODEL SPEEDS
     // ----------------------------------------------------------
     private void createBasicRaceAnimation() {
 
         if (runners.isEmpty()) {
-            appendMessage("No runner models found!");
+            appendMessage("ERROR: No runner models found.");
             return;
         }
 
         winnerDeclared = false;
 
-        double distance = 600; // track distance
+        double distance = 600; // from start to finish
 
-        // Build animation transitions using model speeds
+        // Build TranslateTransitions using model speeds
         TranslateTransition t1 = new TranslateTransition(
                 Duration.seconds(8 / runners.get(0).getBaseSpeed()),
                 runners.get(0).getUiPane()
@@ -169,36 +173,47 @@ public class MarathonController {
     }
 
     // ----------------------------------------------------------
-    // DECLARE WINNER (first runner to finish)
+    // WINNER LOGIC
     // ----------------------------------------------------------
     private void declareWinnerIfFirst(Runner r) {
         if (winnerDeclared) return;
 
         winnerDeclared = true;
 
-        appendMessage("Winner: " + r.getName() + " (#" + r.getNumber() + ") 🎉");
+        appendMessage("🏆 Winner: " + r.getName() + " (#" + r.getNumber() + ")");
         if (messageLabel != null) {
-            messageLabel.setText("Marathon Status – Winner Announced");
+            messageLabel.setText("Winner Announced!");
         }
     }
 
     // ----------------------------------------------------------
-    // CREATE RUNNER MODEL OBJECTS
+    // RANDOMIZE RUNNER MODELS FOR EACH RACE
     // ----------------------------------------------------------
     private void createRunnerModels() {
         runners.clear();
 
-        // Different baseSpeed values so they actually run differently
-        runners.add(new Runner("Finn",       33, 1.3, runner1Pane)); // slightly fast
-        runners.add(new Runner("Bubblegum",  44, 1.0, runner2Pane)); // baseline
-        runners.add(new Runner("Jake",       22, 1.6, runner3Pane)); // fastest
-        runners.add(new Runner("Marceline",  11, 1.1, runner4Pane)); // a bit fast
+        java.util.Random rand = new java.util.Random();
 
-        appendMessage("Runner models created (names, numbers, speeds).");
+        // Randomized base speeds — small variations
+        double finnSpeed       = 1.3 + (rand.nextDouble() * 0.3 - 0.15);  // 1.15–1.45
+        double bubblegumSpeed  = 1.0 + (rand.nextDouble() * 0.25 - 0.12); // 0.88–1.12
+        double jakeSpeed       = 1.6 + (rand.nextDouble() * 0.35 - 0.17); // 1.43–1.77
+        double marcelineSpeed  = 1.1 + (rand.nextDouble() * 0.25 - 0.12); // 0.98–1.22
+
+        runners.add(new Runner("Finn",       33, finnSpeed, runner1Pane));
+        runners.add(new Runner("Bubblegum",  44, bubblegumSpeed, runner2Pane));
+        runners.add(new Runner("Jake",       22, jakeSpeed, runner3Pane));
+        runners.add(new Runner("Marceline",  11, marcelineSpeed, runner4Pane));
+
+        appendMessage("New speeds generated for this race:");
+        appendMessage("Finn: " + String.format("%.2f", finnSpeed));
+        appendMessage("Bubblegum: " + String.format("%.2f", bubblegumSpeed));
+        appendMessage("Jake: " + String.format("%.2f", jakeSpeed));
+        appendMessage("Marceline: " + String.format("%.2f", marcelineSpeed));
     }
 
     // ----------------------------------------------------------
-    // MESSAGE HELPER
+    // LOGGING / MESSAGE HELPER
     // ----------------------------------------------------------
     private void appendMessage(String text) {
         if (messageArea == null) return;
