@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Runner;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -13,11 +14,11 @@ import javafx.util.Duration;
 
 public class MarathonController {
 
-    // Center area where the race is drawn
+    // TRACK UI
     @FXML
     private Pane racePane;
 
-    // Runner panes (each = PNG body + GIF legs)
+    // RUNNERS (each = PNG body + GIF legs)
     @FXML
     private StackPane runner1Pane;
 
@@ -30,7 +31,7 @@ public class MarathonController {
     @FXML
     private StackPane runner4Pane;
 
-    // Bottom buttons
+    // BUTTONS
     @FXML
     private Button startButton;
 
@@ -43,18 +44,21 @@ public class MarathonController {
     @FXML
     private Button exitButton;
 
-    // Status / messages on the bottom right
+    // MESSAGES
     @FXML
     private Label messageLabel;
 
     @FXML
     private TextArea messageArea;
 
-    // Animation objects
+    // ANIMATION
     private ParallelTransition raceAnimation;
     private boolean raceCreated = false;
     private boolean raceRunning = false;
     private boolean winnerDeclared = false;
+
+    // MODEL
+    private java.util.List<Runner> runners = new java.util.ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -64,11 +68,13 @@ public class MarathonController {
         if (messageLabel != null) {
             messageLabel.setText("Marathon Status");
         }
+
+        // create the runner model objects
+        createRunnerModels();
     }
 
     @FXML
     private void handleStart() {
-        // First time: create the basic animation
         if (!raceCreated) {
             createBasicRaceAnimation();
             raceCreated = true;
@@ -114,10 +120,7 @@ public class MarathonController {
         Platform.exit();
     }
 
-    /**
-     * Creates a simple TranslateTransition for each runner.
-     * This version also declares a winner when the first one finishes.
-     */
+    // BASIC RACE ANIMATION
     private void createBasicRaceAnimation() {
         if (runner1Pane == null || runner2Pane == null ||
                 runner3Pane == null || runner4Pane == null) {
@@ -127,10 +130,10 @@ public class MarathonController {
 
         winnerDeclared = false;
 
-        // Rough distance from start to finish
-        double distance = 600; // we can refine this later using racePane width
+        // distance the runners travel
+        double distance = 600;
 
-        // Different durations so they don't all tie
+        // simple test speeds (will be replaced later with model speeds)
         TranslateTransition t1 = new TranslateTransition(Duration.seconds(6), runner1Pane);
         t1.setToX(distance);
 
@@ -143,22 +146,18 @@ public class MarathonController {
         TranslateTransition t4 = new TranslateTransition(Duration.seconds(7.5), runner4Pane);
         t4.setToX(distance);
 
-        // When each runner finishes, check if we already have a winner
-        t1.setOnFinished(e -> declareWinnerIfFirst("Runner 1 (purple)"));
-        t2.setOnFinished(e -> declareWinnerIfFirst("Runner 2 (blue)"));
-        t3.setOnFinished(e -> declareWinnerIfFirst("Runner 3 (star shirt)"));
-        t4.setOnFinished(e -> declareWinnerIfFirst("Runner 4 (pink)"));
+        t1.setOnFinished(e -> declareWinnerIfFirst("Finn (#33)"));
+        t2.setOnFinished(e -> declareWinnerIfFirst("Bubblegum (#44)"));
+        t3.setOnFinished(e -> declareWinnerIfFirst("Jake (#22)"));
+        t4.setOnFinished(e -> declareWinnerIfFirst("Marceline (#11)"));
 
         raceAnimation = new ParallelTransition(t1, t2, t3, t4);
     }
 
-    /**
-     * Declares the winner only once – the first transition that finishes wins.
-     */
+    // DECLARE WINNER
     private void declareWinnerIfFirst(String winnerName) {
-        if (winnerDeclared) {
-            return;
-        }
+        if (winnerDeclared) return;
+
         winnerDeclared = true;
 
         appendMessage("Winner: " + winnerName + " 🎉");
@@ -167,11 +166,22 @@ public class MarathonController {
         }
     }
 
-    // Helper to write into the message area
+    // CREATE RUNNER MODEL OBJECTS
+    private void createRunnerModels() {
+        runners.clear();
+
+        runners.add(new Runner("Finn",       33, 1.0, runner1Pane));
+        runners.add(new Runner("Bubblegum",  44, 1.0, runner2Pane));
+        runners.add(new Runner("Jake",       22, 1.0, runner3Pane));
+        runners.add(new Runner("Marceline",  11, 1.0, runner4Pane));
+
+        appendMessage("Runner models created (names, numbers, speeds).");
+    }
+
+    // MESSAGE HELPER
     private void appendMessage(String text) {
-        if (messageArea == null) {
-            return;
-        }
+        if (messageArea == null) return;
+
         if (messageArea.getText().isEmpty()) {
             messageArea.setText(text);
         } else {

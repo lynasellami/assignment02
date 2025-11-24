@@ -1,18 +1,21 @@
 package Model;
 
+import javafx.scene.layout.StackPane;
+
 public class Runner {
 
     private String name;
     private int number;
-    private double speed;    // pixels per second (or any unit you choose)
-    private double distance; // distance covered so far
+    private double baseSpeed;
+    private StackPane uiPane;
 
-    public Runner(String name, int number) {
+    public Runner(String name, int number, double baseSpeed, StackPane uiPane) {
         this.name = name;
         this.number = number;
+        this.baseSpeed = baseSpeed;
+        this.uiPane = uiPane;
     }
 
-    // Basic getters
     public String getName() {
         return name;
     }
@@ -21,22 +24,11 @@ public class Runner {
         return number;
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getBaseSpeed() {
+        return baseSpeed;
     }
 
-    public double getDistance() {
-        return distance;
+    public StackPane getUiPane() {
+        return uiPane;
     }
-
-    // Basic setters
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
-    // TODO: Add methods for updating distance, resetting, etc.
 }
